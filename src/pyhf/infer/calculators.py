@@ -595,7 +595,7 @@ class ToyCalculator(object):
                         signal_pars,
                         self.par_bounds,
                         self.fixed_params,
-                    )
+                    ).result()
                 )
 
             bkg_teststat = []
@@ -609,7 +609,7 @@ class ToyCalculator(object):
                         bkg_pars,
                         self.par_bounds,
                         self.fixed_params,
-                    )
+                    ).result()
                 )
 
             s_plus_b = EmpiricalDistribution(tensorlib.astensor(list(signal_teststat)))
