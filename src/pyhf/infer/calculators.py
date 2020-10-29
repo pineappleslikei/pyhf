@@ -531,10 +531,6 @@ class ToyCalculator(object):
 
         teststat_func = qmu_tilde if self.qtilde else qmu
 
-        wrapped_teststat_func = lambda sample: teststat_func(
-            poi_test, sample, self.pdf, signal_pars, self.par_bounds, self.fixed_params
-        )
-
         tqdm_options = dict(
             total=self.ntoys,
             leave=False,
@@ -544,14 +540,45 @@ class ToyCalculator(object):
             unit='toy',
         )
 
+        signal_sample = tqdm.tqdm(
+            signal_sample, **tqdm_options, position=0, desc='Signal-like'
+        )
+        bkg_sample = tqdm.tqdm(
+            bkg_sample, **tqdm_options, position=1, desc='Background-like'
+        )
+
         signal_teststat = self.executor.map(
-            wrapped_teststat_func,
-            tqdm.tqdm(signal_sample, **tqdm_options, desc='Signal-like'),
+            teststat_func,
+            *zip(
+                *(
+                    (
+                        poi_test,
+                        sample,
+                        self.pdf,
+                        signal_pars,
+                        self.par_bounds,
+                        self.fixed_params,
+                    )
+                    for sample in signal_sample
+                )
+            ),
         )
 
         bkg_teststat = self.executor.map(
-            wrapped_teststat_func,
-            tqdm.tqdm(bkg_sample, **tqdm_options, desc='Background-like'),
+            teststat_func,
+            *zip(
+                *(
+                    (
+                        poi_test,
+                        sample,
+                        self.pdf,
+                        bkg_pars,
+                        self.par_bounds,
+                        self.fixed_params,
+                    )
+                    for sample in bkg_sample
+                )
+            ),
         )
 
         s_plus_b = EmpiricalDistribution(tensorlib.astensor(list(signal_teststat)))
