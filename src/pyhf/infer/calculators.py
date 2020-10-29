@@ -10,6 +10,7 @@ Using the calculators hypothesis tests can then be performed.
 from .mle import fixed_poi_fit
 from .. import get_backend
 from .test_statistics import qmu, qmu_tilde
+from .. import futures
 import tqdm
 
 
@@ -454,6 +455,7 @@ class ToyCalculator(object):
         qtilde=True,
         ntoys=2000,
         track_progress=True,
+        executor=None,
     ):
         """
         Toy-based Calculator.
@@ -467,6 +469,7 @@ class ToyCalculator(object):
             qtilde (:obj:`bool`): When ``True`` perform the calculation using the alternative test statistic, :math:`\\tilde{q}`, as defined in Equation (62) of :xref:`arXiv:1007.1727`.
             ntoys (:obj:`int`): Number of toys to use (how many times to sample the underlying distributions)
             track_progress (:obj:`bool`): Whether to display the `tqdm` progress bar or not (outputs to `stderr`)
+            executor (:class:`concurrent.futures.Executor`): Executor for job dispatch. ``None`` by default.
 
         Returns:
             ~pyhf.infer.calculators.ToyCalculator: The calculator for toy-based quantities.
@@ -480,6 +483,7 @@ class ToyCalculator(object):
         self.fixed_params = fixed_params or pdf.config.suggested_fixed()
         self.qtilde = qtilde
         self.track_progress = track_progress
+        self.executor = executor or futures.TrivialExecutor()
 
     def distributions(self, poi_test, track_progress=None):
         """
@@ -539,7 +543,8 @@ class ToyCalculator(object):
         signal_teststat = []
         for sample in tqdm.tqdm(signal_sample, **tqdm_options, desc='Signal-like'):
             signal_teststat.append(
-                teststat_func(
+                executor.submit(
+                    teststat_func,
                     poi_test,
                     sample,
                     self.pdf,
@@ -552,11 +557,12 @@ class ToyCalculator(object):
         bkg_teststat = []
         for sample in tqdm.tqdm(bkg_sample, **tqdm_options, desc='Background-like'):
             bkg_teststat.append(
-                teststat_func(
+                executor.submit(
+                    teststat_func,
                     poi_test,
                     sample,
                     self.pdf,
-                    bkg_pars,
+                    signal_pars,
                     self.par_bounds,
                     self.fixed_params,
                 )
