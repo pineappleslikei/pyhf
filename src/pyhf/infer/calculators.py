@@ -44,7 +44,7 @@ def generate_asimov_data(asimov_mu, data, pdf, init_pars, par_bounds, fixed_para
         >>> data = observations + model.config.auxdata
         >>> mu_test = 1.0
         >>> pyhf.infer.calculators.generate_asimov_data(mu_test, data, model, None, None, None)
-        array([ 60.61229858,  56.52802479, 270.06832542,  48.31545488])
+        array([ 60.61332311,  56.52750217, 270.07401727,  48.31490026])
 
     Args:
         asimov_mu (:obj:`float`): The value for the parameter of interest to be used.
@@ -596,8 +596,8 @@ class EmpiricalDistribution:
             ... )
             >>> n_sigma = pyhf.tensorlib.astensor([-2, -1, 0, 1, 2])
             >>> dist.expected_value(n_sigma)
-            array([0.00000000e+00, 0.00000000e+00, 5.53671231e-04, 8.29987137e-01,
-                   2.99592664e+00])
+            array([0.00000000e+00, 0.00000000e+00, 5.54127113e-04, 8.29987224e-01,
+                   2.99592670e+00])
 
         Args:
             nsigma (:obj:`int` or :obj:`tensor`): The number of standard deviations.
@@ -875,7 +875,7 @@ class ToyCalculator:
             ...     data, model, ntoys=100, track_progress=False
             ... )
             >>> toy_calculator.teststatistic(mu_test)
-            array(3.93824492)
+            array(3.93824506)
 
         Args:
             poi_test (:obj:`float` or :obj:`tensor`): The value for the parameter of interest.
