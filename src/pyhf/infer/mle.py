@@ -2,7 +2,7 @@
 from .. import get_backend
 from ..exceptions import UnspecifiedPOI
 
-__all__ = ["fit", "fixed_poi_fit", "twice_nll"]
+__all__ = ["fit", "fixed_poi_fit", "nll"]
 
 
 def __dir__():
