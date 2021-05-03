@@ -26,7 +26,7 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         python -m pip install --ignore-installed --upgrade -q --no-cache-dir -e .[test]
         python -m pip uninstall --yes scipy
-        python -m pip install --upgrade --no-cache-dir cython pip install pybind11
+        python -m pip install --upgrade --no-cache-dir pybind11 cython
         python -m pip install --upgrade --no-cache-dir git+git://github.com/scipy/scipy.git
         python -m pip list
     - name: Test with pytest
