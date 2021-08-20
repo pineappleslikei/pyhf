@@ -39,15 +39,9 @@ class Callables:
         """
         Append a new bound method as a callback to the list of callables.
         """
-        # try:
-        #     # methods
-        #     callback_ref = weakref.ref(callback.__func__), weakref.ref(
-        #         callback.__self__
-        #     )
-        # except AttributeError:
-        #     callback_ref = weakref.ref(callback), None
-        callback_ref = weakref.ref(callback.__func__), weakref.ref(callback.__self__)
-        self._callbacks.append(callback_ref)
+        self._callbacks.append(
+            (weakref.ref(callback.__func__), weakref.ref(callback.__self__))
+        )
 
     def _flush(self):
         """
@@ -67,15 +61,7 @@ class Callables:
 
     def __call__(self, *args, **kwargs):
         for func, arg in self.callbacks:
-            # weakref: needs to be de-ref'd first before calling
-            # if arg:
-            #     func()(arg(), *args, **kwargs)
-            # else:
-            #     func()(*args, **kwargs)
             func()(arg(), *args, **kwargs)
-
-    # def __iter__(self):
-    #     return iter(self.callbacks)
 
     def __getitem__(self, index):
         return self.callbacks[index]
